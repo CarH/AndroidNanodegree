@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+
+    <!-- Settings Values -->
+    <string name="settings">Settings</string>
+
+
+    <!-- Order By settings -->
+    <string name="pref_order_by_label">Order By</string>
+    <string name="pref_order_by_key" translatable="false">order_by_key</string>
+
+    <!-- QUESTION:
+         I'm not sure if this is the best place to put these definitions (popularity.desc and vote_average.desc),
+         you can see them below.
+         Is there a better place to insert them?
+     -->
+    <string name="pref_order_by_most_popular" translatable="false">popularity.desc</string>
+    <string name="pref_order_by_highest_rated" translatable="false">vote_average.desc</string>
+
+    <!-- Entries: to Human read -->
+    <string-array name="pref_order_by_entries">
+        <item>Most Popular</item>
+        <item>Highest Rated</item>
+    </string-array>
+    <!-- Values: correspondent entry values used in the application side -->
+    <string-array name="pref_order_by_values">
+        <item>@string/pref_order_by_most_popular</item>
+        <item>@string/pref_order_by_highest_rated</item>
+    </string-array>
+
+
+    <string name="movie_bundle" translatable="false">MOVIE_BUNDLE</string>
+    <string name="movie_original_title" translatable="false">MOVIE_ORIGINAL_TITLE</string>
+    <string name="movie_synopsis" translatable="false">MOVIE_SYNOPSIS</string>
+    <string name="movie_poster" translatable="false">MOVIE_POSTER</string>
+    <string name="movie_vote_average" translatable="false">VOTE_AVERAGE</string>
+    <string name="movie_release_date" translatable="false">RELEASE_DATE</string>
+</resources>

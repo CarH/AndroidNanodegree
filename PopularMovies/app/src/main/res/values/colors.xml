@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_black">#000000</color>
+    <color name="color_primary_dark">#212121</color>
+    <color name="color_primary">#303030</color>
+    <color name="color_background">#303030</color>
+    <color name="color_accent">#424242</color>
+    <color name="color_text_white">#ffffff</color>
+
+    <!-- black 60% Opacity  -->
+    <color name="black_opacity_60">#99000000</color>
+    <!-- white 90% Opacity  -->
+    <color name="white_opacity_90">#E6ffffff</color>
+</resources>
