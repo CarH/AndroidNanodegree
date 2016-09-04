@@ -3,11 +3,11 @@ package com.ch.popularmovies;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 
-public class SettingsActivity extends PreferenceActivity
+public class SettingsActivity extends AppCompatPreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
     private final String LOG_TAG = SettingsActivity.class.getSimpleName();
@@ -22,8 +22,6 @@ public class SettingsActivity extends PreferenceActivity
 
     public void bindPreferenceSummaryToValue(Preference pref){
         pref.setOnPreferenceChangeListener(this);
-
-        Log.v(LOG_TAG, ">> " + PreferenceManager.getDefaultSharedPreferences(pref.getContext()).getString(pref.getKey(), ""));
 
         onPreferenceChange(pref, PreferenceManager
             .getDefaultSharedPreferences(pref.getContext())
@@ -48,5 +46,17 @@ public class SettingsActivity extends PreferenceActivity
         if (prefixIndex >= 0) {
             preference.setSummary(listPreference.getEntries()[prefixIndex]);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            if (!super.onOptionsItemSelected(item)) {
+                NavUtils.navigateUpFromSameTask(this);
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

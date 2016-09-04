@@ -4,19 +4,17 @@ package com.ch.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,22 +28,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -71,12 +65,14 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // Setting up the movie list
         if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             this.mMovies = new ArrayList<>();
         } else {
             this.mMovies = savedInstanceState.getParcelableArrayList("movies");
         }
 
+        // Ugly solution to verify later on onResume method if the oder by criteria has been changed
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         this.mPrefOrder = sharedPrefs.getString(getString(R.string.pref_order_by_key), "");
     }
@@ -144,15 +140,85 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
     }
 
     private void fetchMoviesToPopulateTheGrid() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String pref_order = sharedPrefs.getString(getString(R.string.pref_order_by_key), "");
-
         if (isConnected()) {
-            (new FetchMoviesTask()).execute(pref_order);
+            // Using Volley as suggested by a reviewer
+            final String url = getMovieListURL();
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (response == null) return;
+                            parseResponseAndUpdateMovieList(response);
+                        }
+
+                        private void parseResponseAndUpdateMovieList(String response) {
+                            try {
+                                JSONArray jsonArray = new JSONObject(response).getJSONArray("results");
+                                for (int i=0; i < jsonArray.length(); i++) {
+                                    Movie movie = new Movie();
+                                    movie.title 		= jsonArray.getJSONObject(i).getString("title");
+                                    movie.originalTitle = jsonArray.getJSONObject(i).getString("original_title");
+                                    movie.overview 		= jsonArray.getJSONObject(i).getString("overview");
+                                    movie.popularity 	= jsonArray.getJSONObject(i).getString("popularity");
+                                    movie.voteCount 	= jsonArray.getJSONObject(i).getString("vote_count");
+                                    movie.voteAverage 	= jsonArray.getJSONObject(i).getString("vote_average");
+
+                                    String posterPath   = jsonArray.getJSONObject(i).getString("poster_path");
+                                    movie.posterPath    = (posterPath.equals("null")) ? null
+                                                            : getPosterURL(posterPath);
+
+                                    String releaseDate  = jsonArray.getJSONObject(i).getString("release_date");
+                                    String[] splittedDate = releaseDate.split("-");
+                                    if (splittedDate.length == 3) {
+                                        movie.releaseDate = splittedDate[1] + "/" + splittedDate[2] + "/" + splittedDate[0];
+                                    }
+                                    else {
+                                        movie.releaseDate = releaseDate;
+                                    }
+
+                                    mMovies.add(movie);
+                                }
+                                mAdapter.notifyDataSetChanged();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.v(LOG_TAG, " ERROR: " + error.getMessage());
+                        }
+                    });
+
+            RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
         else {
             printNotConnectedMessage();
         }
+    }
+
+    private String getMovieListURL() {
+        final String SCHEME     = "http";
+        final String AUTHORITY  = "api.themoviedb.org";
+        final String BASE_PATH  = "3/movie/";
+        final String API_KEY    = "api_key";
+
+        String prefOrder = getOrderByPreference();
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(SCHEME)
+                .authority(AUTHORITY)
+                .path(BASE_PATH+prefOrder)
+                .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_API_KEY);
+
+        return builder.toString();
+    }
+
+    private String getOrderByPreference() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext())
+                    .getString(getString(R.string.pref_order_by_key),
+                            getString(R.string.pref_order_by_most_popular));
     }
 
     private void printNotConnectedMessage() {
@@ -180,13 +246,7 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         bundle.putString(getString(R.string.movie_synopsis), movie.overview);
         bundle.putString(getString(R.string.movie_vote_average), movie.voteAverage);
         bundle.putString(getString(R.string.movie_release_date), movie.releaseDate);
-
-        // I know that this is too much code to just pass an image to an activity
-        // unfortunately it was what I found :( . Any suggestion would be appreciated :D
-        String filename = "poster.png";
-        ImageView posterImageView = (ImageView) view.findViewById(R.id.grid_item_thumbnail);
-        saveImageViewInFile(posterImageView, filename);
-        bundle.putString(getString(R.string.movie_poster), filename);
+        bundle.putString(getString(R.string.movie_poster), movie.posterPath);
 
         Intent intent = new Intent(getContext(), DetailMovieActivity.class);
         intent.putExtra(getString(R.string.movie_bundle), bundle);
@@ -194,38 +254,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             startActivity(intent);
         }
     }
-
-    private void saveImageViewInFile(ImageView posterImageView, String filename) {
-        FileOutputStream stream = null;
-        Bitmap imageBitmap = null;
-        try {
-            stream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
-
-            imageBitmap = ((BitmapDrawable) posterImageView.getDrawable()).getBitmap();
-            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void fetchPosterImage(int position, ViewHolder holder, String posterPath) {
-        if (isConnected()) {
-            (new FetchPosterImageTask(position, holder))
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, posterPath);
-        }
-        else {
-            printNotConnectedMessage();
-        }
-    }
-
 
     class Movie implements Parcelable{
         public String title;
@@ -236,10 +264,8 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         public String voteCount;
         public String voteAverage;
         public String posterPath;
-        public Bitmap posterImage;
 
         public Movie(){
-            posterImage = null;
         }
 
         protected Movie(Parcel in) {
@@ -251,7 +277,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             voteCount = in.readString();
             voteAverage = in.readString();
             posterPath = in.readString();
-            posterImage = in.readParcelable(Bitmap.class.getClassLoader());
         }
 
         public final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -281,7 +306,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             parcel.writeString(voteCount);
             parcel.writeString(voteAverage);
             parcel.writeString(posterPath);
-            parcel.writeParcelable(posterImage, i);
         }
     }
 
@@ -295,7 +319,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
 
         public MoviesGridAdapter(Context context, int resource, List objects) {
             super(context, resource, objects);
-
         }
 
         @Override
@@ -307,7 +330,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
                 ViewHolder holder = new ViewHolder();
                 holder.title = (TextView) convertView.findViewById(R.id.grid_item_movie_title);
                 holder.thumbnail = (ImageView) convertView.findViewById(R.id.grid_item_thumbnail);
-
                 convertView.setTag(holder);
             }
 
@@ -318,16 +340,9 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             holder.position = position;
 
             // Checks if a valid poster path has been given
-            if (!movie.posterPath.equals("null")) {
-                Bitmap imageBitmap = mMovies.get(position).posterImage;
-                // Check if it has already been downloaded. If yes, use it instead of query again
-                if (imageBitmap != null) {
-                    holder.thumbnail.setImageBitmap(imageBitmap);
-                } else {
-                    // Place a placeholder image on the current view to be displayed until the
-                    // correspondent poster image arrive
-                    fetchPosterImage(position, holder, movie.posterPath);
-                }
+            if (movie.posterPath != null) {
+                // Picasso.with(getContext()).setIndicatorsEnabled(true);
+                Picasso.with(getContext()).load(getPosterURL(movie.posterPath)).into(holder.thumbnail);
             }
             else { // otherwise sets the placeholder image as the poster image
                 holder.thumbnail.setImageResource(R.drawable.ic_image_not_found);
@@ -338,182 +353,16 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         }
     }
 
-
-    class FetchPosterImageTask extends AsyncTask <String, Void, Bitmap> {
-
-        private int mPosition;
-        private ViewHolder mViewHolder;
-
-        private final String SCHEME     = "https";
-        private final String AUTHORITY  = "image.tmdb.org";
-        private final String PATH       = "t/p/w500";
-
-        public FetchPosterImageTask(int position, ViewHolder viewHolder) {
-            this.mPosition = position;
-            this.mViewHolder = viewHolder;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            if (params.length != 1 || params[0].equals(null))
-                return null;
-
-            String posterPath = params[0];
-
-            // To allow closing the connection socket and the input stream in the finally block
-            HttpsURLConnection urlConnection = null;
-            InputStream inputStream = null;
-
-            Bitmap result = null;
-
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme(SCHEME)
-                    .authority(AUTHORITY)
-                    .appendEncodedPath(PATH)
-                    .appendEncodedPath(posterPath);
-
-            try {
-                URL url = new URL(builder.toString());
-
-                urlConnection = (HttpsURLConnection) url.openConnection();
-                urlConnection.connect();
-
-                inputStream = urlConnection.getInputStream();
-
-                if (inputStream != null) {
-                    result = BitmapFactory.decodeStream(inputStream);
-                }
-                else {
-                    result = null;
-                }
-
-                return result;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public void onPostExecute(Bitmap posterImage) {
-            // If the view has not been recycled yet, set the poster
-            if (this.mPosition == this.mViewHolder.position){
-                // If there isn't a poster image, put a placeholder
-                if (posterImage == null) {
-                    this.mViewHolder.thumbnail.setImageResource(R.drawable.ic_image_not_found);
-                }
-                else{
-                    this.mViewHolder.thumbnail.setImageBitmap(posterImage);
-                    mMovies.get(this.mPosition).posterImage = posterImage;
-                }
-            }
-        }
-    }
-
-
-    class FetchMoviesTask extends AsyncTask<String, String, String> {
-        private final String SCHEME     = "https";
-        private final String AUTHORITY  = "api.themoviedb.org";
-        private final String PATH       = "3/movie";
-
-
-        @Override
-        protected String doInBackground(String... params) {
-            final String SORT_BY        = "sort_by";
-            final String API_KEY        = "api_key";
-
-            if (params.length != 1) {
-                return null;
-            }
-
-            String sortByValue = params[0];
-            String jsonRes = null;
-            HttpsURLConnection conn;
-            Uri.Builder builder = new Uri.Builder();
-
-            builder.scheme(SCHEME)
-                    .authority(AUTHORITY)
-                    .path(PATH)
-                    .appendQueryParameter(SORT_BY, sortByValue)
-                    .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_API_KEY);
-
-            try {
-
-                URL url = new URL(builder.toString());
-                conn = (HttpsURLConnection) url.openConnection();
-
-                conn.setRequestMethod("GET");
-                conn.connect();
-
-                InputStream inputStream = conn.getInputStream();
-                BufferedReader reader   = new BufferedReader(new InputStreamReader(inputStream));
-
-                if (inputStream == null) {
-                    jsonRes = null;
-                }
-
-                String line = "";
-                StringBuffer buffer = new StringBuffer();
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line+"\n");
-                }
-
-                if (buffer.length() > 0) {
-                    jsonRes = buffer.toString();
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return jsonRes;
-        }
-
-        @Override
-        protected void onPostExecute(String jsonStr) {
-            if (jsonStr == null) return;
-            try {
-                JSONArray jsonArray = new JSONObject(jsonStr).getJSONArray("results");
-                for (int i=0; i < jsonArray.length(); i++) {
-                    Movie movie = new Movie();
-                    movie.title 		= jsonArray.getJSONObject(i).getString("title");
-                    movie.originalTitle = jsonArray.getJSONObject(i).getString("original_title");
-                    movie.overview 		= jsonArray.getJSONObject(i).getString("overview");
-                    movie.popularity 	= jsonArray.getJSONObject(i).getString("popularity");
-                    movie.voteCount 	= jsonArray.getJSONObject(i).getString("vote_count");
-                    movie.voteAverage 	= jsonArray.getJSONObject(i).getString("vote_average");
-                    movie.posterPath 	= jsonArray.getJSONObject(i).getString("poster_path");
-
-                    String releaseDate  = jsonArray.getJSONObject(i).getString("release_date");
-                    String[] splittedDate = releaseDate.split("-");
-                    if (splittedDate.length == 3) {
-                        movie.releaseDate = splittedDate[1] + "/" + splittedDate[2] + "/" + splittedDate[0];
-                    }
-                    else {
-                        movie.releaseDate = releaseDate;
-                    }
-
-                    mMovies.add(movie);
-                }
-                mAdapter.notifyDataSetChanged();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+    @NonNull
+    private String getPosterURL(String path) {
+        final String SCHEME     = "https";
+        final String AUTHORITY  = "image.tmdb.org";
+        final String PATH       = "t/p/w500";
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendEncodedPath(PATH)
+                .appendEncodedPath(path);
+        return builder.toString();
     }
 }

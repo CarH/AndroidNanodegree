@@ -14,8 +14,8 @@
          you can see them below.
          Is there a better place to insert them?
      -->
-    <string name="pref_order_by_most_popular" translatable="false">popularity.desc</string>
-    <string name="pref_order_by_highest_rated" translatable="false">vote_average.desc</string>
+    <string name="pref_order_by_most_popular" translatable="false">popular</string>
+    <string name="pref_order_by_highest_rated" translatable="false">top_rated</string>
 
     <!-- Entries: to Human read -->
     <string-array name="pref_order_by_entries">
