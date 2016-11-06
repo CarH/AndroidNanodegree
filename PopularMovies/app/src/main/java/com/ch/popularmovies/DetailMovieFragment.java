@@ -21,7 +21,7 @@ public class DetailMovieFragment extends Fragment{
     private String mMovieSynopsis;
     private String mMovieReleaseDate;
     private String mMovieUserRating;
-    private String mMoviePoster;
+    private String mMoviePosterUrl;
 
     public DetailMovieFragment(){
 
@@ -38,7 +38,7 @@ public class DetailMovieFragment extends Fragment{
         this.mMovieSynopsis = movieInfo.getString(getString(R.string.movie_synopsis));
         this.mMovieReleaseDate = movieInfo.getString(getString(R.string.movie_release_date));
         this.mMovieUserRating = movieInfo.getString(getString(R.string.movie_vote_average));
-        this.mMoviePoster = movieInfo.getString(getString(R.string.movie_poster));
+        this.mMoviePosterUrl = movieInfo.getString(getString(R.string.movie_poster));
     }
 
     @Nullable
@@ -52,7 +52,7 @@ public class DetailMovieFragment extends Fragment{
         TextView movieReleaseDate = (TextView) root.findViewById(R.id.release_date);
         TextView movieUserRating = (TextView) root.findViewById(R.id.user_rating);
 
-        Picasso.with(getActivity()).load(mMoviePoster).into(moviePoster);
+        Picasso.with(getActivity()).load(mMoviePosterUrl).into(moviePoster);
         movieTitle.setText(this.mMovieTitle);
         movieSynopsis.setText(this.mMovieSynopsis);
         movieReleaseDate.setText(this.mMovieReleaseDate);
