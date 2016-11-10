@@ -3,14 +3,10 @@ package com.ch.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -41,20 +36,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ch.popularmovies.utilities.ConnectionUtility.isConnected;
+import static com.ch.popularmovies.utilities.ConnectionUtility.printNotConnectedMessage;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MoviesFragment extends Fragment implements AdapterView.OnItemClickListener {
     private static final String LOG_TAG = MoviesFragment.class.getSimpleName();
+    public static final String ORDER_BY_KEY = "order_by";
 
     // I've created the list below in order to save the movie objects that I've downloaded via API.
     // Is that the ideal way of doing it?
     private ArrayList<Movie> mMovies;
 
     private ArrayAdapter mAdapter;
-
-    private String mPrefOrder;
 
     public MoviesFragment() {
         // Required empty public constructor
@@ -71,10 +68,6 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         } else {
             this.mMovies = savedInstanceState.getParcelableArrayList("movies");
         }
-
-        // Ugly solution to verify later on onResume method if the oder by criteria has been changed
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        this.mPrefOrder = sharedPrefs.getString(getString(R.string.pref_order_by_key), "");
     }
 
     @Override
@@ -126,24 +119,15 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
-        // To update the movie grid IF the order_by value has been changed
-        // I know it seems strange... suggestions are welcome!
-        String pref_order = sharedPrefs.getString(getString(R.string.pref_order_by_key), "");
-        if (!pref_order.equals(this.mPrefOrder)){
-            this.mPrefOrder = pref_order;
-            this.mAdapter.clear();
-            this.mMovies.clear();
-            fetchMoviesToPopulateTheGrid();
-        }
     }
 
     private void fetchMoviesToPopulateTheGrid() {
-        if (isConnected()) {
+        if (!isConnected(getContext()))
+            printNotConnectedMessage(getContext());
+        else {
             // Using Volley as suggested by a reviewer
-            final String url = getMovieListURL();
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+            StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                    getMovieListUrl(),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -154,27 +138,19 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
                         private void parseResponseAndUpdateMovieList(String response) {
                             try {
                                 JSONArray jsonArray = new JSONObject(response).getJSONArray("results");
-                                for (int i=0; i < jsonArray.length(); i++) {
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonMovie = jsonArray.getJSONObject(i);
                                     Movie movie = new Movie();
-                                    movie.title 		= jsonArray.getJSONObject(i).getString("title");
-                                    movie.originalTitle = jsonArray.getJSONObject(i).getString("original_title");
-                                    movie.overview 		= jsonArray.getJSONObject(i).getString("overview");
-                                    movie.popularity 	= jsonArray.getJSONObject(i).getString("popularity");
-                                    movie.voteCount 	= jsonArray.getJSONObject(i).getString("vote_count");
-                                    movie.voteAverage 	= jsonArray.getJSONObject(i).getString("vote_average");
 
-                                    String posterPath   = jsonArray.getJSONObject(i).getString("poster_path");
-                                    movie.posterPath    = (posterPath.equals("null")) ? null
-                                                            : getPosterURL(posterPath);
-
-                                    String releaseDate  = jsonArray.getJSONObject(i).getString("release_date");
-                                    String[] splittedDate = releaseDate.split("-");
-                                    if (splittedDate.length == 3) {
-                                        movie.releaseDate = splittedDate[1] + "/" + splittedDate[2] + "/" + splittedDate[0];
-                                    }
-                                    else {
-                                        movie.releaseDate = releaseDate;
-                                    }
+                                    movie.id = jsonMovie.getLong("id");
+                                    movie.title = jsonMovie.getString("title");
+                                    movie.originalTitle = jsonMovie.getString("original_title");
+                                    movie.overview = jsonMovie.getString("overview");
+                                    movie.popularity = jsonMovie.getString("popularity");
+                                    movie.voteCount = jsonMovie.getString("vote_count");
+                                    movie.voteAverage = jsonMovie.getString("vote_average");
+                                    movie.posterUrl = getPosterUrl(jsonMovie.getString("poster_path"));
+                                    movie.releaseDate = getFormattedDate(jsonMovie.getString("release_date"));
 
                                     mMovies.add(movie);
                                 }
@@ -183,57 +159,51 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
                                 e.printStackTrace();
                             }
                         }
+
+                        @Nullable
+                        private String getPosterUrl(String posterPath) {
+                            return (posterPath.equals("null")) ? null
+                                    : composePosterUrl(posterPath);
+                        }
+
+                        private String getFormattedDate(String releaseDate) {
+                            String[] splitDate = releaseDate.split("-");
+                            return (splitDate.length == 3) ?
+                                    splitDate[1] + "/" + splitDate[2] + "/" + splitDate[0] :
+                                    releaseDate;
+                        }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v(LOG_TAG, " ERROR: " + error.getMessage());
+                            Log.v(LOG_TAG, "ERROR (Volley): " + error.getMessage());
                         }
                     });
 
             RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
         }
-        else {
-            printNotConnectedMessage();
-        }
     }
 
-    private String getMovieListURL() {
+    private String getMovieListUrl() {
         final String SCHEME     = "http";
         final String AUTHORITY  = "api.themoviedb.org";
         final String BASE_PATH  = "3/movie/";
         final String API_KEY    = "api_key";
 
-        String prefOrder = getOrderByPreference();
+        String prefOrder = getOrderByCriteria();
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(SCHEME)
                 .authority(AUTHORITY)
-                .path(BASE_PATH+prefOrder)
+                .path(BASE_PATH)
+                .appendPath(prefOrder)
                 .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_API_KEY);
 
         return builder.toString();
     }
 
-    private String getOrderByPreference() {
-        return PreferenceManager.getDefaultSharedPreferences(getContext())
-                    .getString(getString(R.string.pref_order_by_key),
-                            getString(R.string.pref_order_by_most_popular));
-    }
-
-    private void printNotConnectedMessage() {
-        Toast.makeText(getContext(), "No internet connection :(", Toast.LENGTH_LONG).show();
-    }
-
-    private boolean isConnected() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        return isConnected;
+    private String getOrderByCriteria() {
+        return getArguments().getString(ORDER_BY_KEY);
     }
 
     @Override
@@ -242,11 +212,12 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         Movie movie = (Movie) adapter.getItemAtPosition(i);
 
         Bundle bundle = new Bundle();
+        bundle.putString(getString(R.string.movie_id), String.valueOf(movie.id));
         bundle.putString(getString(R.string.movie_original_title), movie.originalTitle);
         bundle.putString(getString(R.string.movie_synopsis), movie.overview);
         bundle.putString(getString(R.string.movie_vote_average), movie.voteAverage);
         bundle.putString(getString(R.string.movie_release_date), movie.releaseDate);
-        bundle.putString(getString(R.string.movie_poster), movie.posterPath);
+        bundle.putString(getString(R.string.movie_poster), movie.posterUrl);
 
         Intent intent = new Intent(getContext(), DetailMovieActivity.class);
         intent.putExtra(getString(R.string.movie_bundle), bundle);
@@ -263,7 +234,8 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
         public String popularity;
         public String voteCount;
         public String voteAverage;
-        public String posterPath;
+        public String posterUrl;
+        public long id;
 
         public Movie(){
         }
@@ -276,7 +248,7 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             popularity = in.readString();
             voteCount = in.readString();
             voteAverage = in.readString();
-            posterPath = in.readString();
+            posterUrl = in.readString();
         }
 
         public final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -305,7 +277,7 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             parcel.writeString(popularity);
             parcel.writeString(voteCount);
             parcel.writeString(voteAverage);
-            parcel.writeString(posterPath);
+            parcel.writeString(posterUrl);
         }
     }
 
@@ -340,12 +312,18 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
             holder.position = position;
 
             // Checks if a valid poster path has been given
-            if (movie.posterPath != null) {
+            if (movie.posterUrl != null) {
+                // TODO :: REMOVE
                 // Picasso.with(getContext()).setIndicatorsEnabled(true);
-                Picasso.with(getContext()).load(getPosterURL(movie.posterPath)).into(holder.thumbnail);
+
+                Picasso.with(getContext())
+                        .load(movie.posterUrl)
+                        .placeholder(getContext().getResources().getDrawable(R.drawable.ic_image_placeholder))
+                        .error(android.R.drawable.stat_notify_error)
+                        .into(holder.thumbnail);
             }
             else { // otherwise sets the placeholder image as the poster image
-                holder.thumbnail.setImageResource(R.drawable.ic_image_not_found);
+                holder.thumbnail.setImageResource(R.drawable.ic_image_placeholder);
                 holder.thumbnail.setScaleType(ImageView.ScaleType.FIT_XY);
             }
 
@@ -354,15 +332,17 @@ public class MoviesFragment extends Fragment implements AdapterView.OnItemClickL
     }
 
     @NonNull
-    private String getPosterURL(String path) {
+    private String composePosterUrl(String path) {
         final String SCHEME     = "https";
         final String AUTHORITY  = "image.tmdb.org";
         final String PATH       = "t/p/w500";
+
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendEncodedPath(PATH)
                 .appendEncodedPath(path);
+
         return builder.toString();
     }
 }

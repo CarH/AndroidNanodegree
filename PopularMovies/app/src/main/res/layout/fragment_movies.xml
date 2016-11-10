@@ -2,7 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ch.popularmovies.MoviesFragment">
+    tools:context="com.ch.popularmovies.MoviesFragment"
+    android:background="@color/color_background">
+
     <GridView
         android:id="@+id/grid_movies"
         android:layout_width="match_parent"

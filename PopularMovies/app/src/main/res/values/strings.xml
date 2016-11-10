@@ -30,9 +30,11 @@
 
 
     <string name="movie_bundle" translatable="false">MOVIE_BUNDLE</string>
+    <string name="movie_id" translatable="false">MOVIE_ID</string>
     <string name="movie_original_title" translatable="false">MOVIE_ORIGINAL_TITLE</string>
     <string name="movie_synopsis" translatable="false">MOVIE_SYNOPSIS</string>
     <string name="movie_poster" translatable="false">MOVIE_POSTER</string>
     <string name="movie_vote_average" translatable="false">VOTE_AVERAGE</string>
     <string name="movie_release_date" translatable="false">RELEASE_DATE</string>
+
 </resources>

@@ -2,12 +2,22 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/color_background</item>
+        <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
     </style>
+
+    <!-- Main activity theme -->
+    <!--<style name="MovieMainTheme" parent="AppTheme">-->
+        <!--<item name="actionBarStyle">@style/ActionBar.Solid.PopularMovie</item>-->
+    <!--</style>-->
+
+    <!--<style name="ActionBar.Solid.PopularMovie" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">-->
+        <!--<item name="android:fontFamily">cursive</item>-->
+        <!--<item name="background">@color/black_opacity_60</item>-->
+    <!--</style>-->
 
     <style name="CustomCardStyle">
         <item name="android:layout_gravity">center</item>
@@ -30,10 +40,20 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="BaseTitleDetailLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_text_white</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Title</item>
+        <item name="android:fontFamily">cursive</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
     <style name="BaseImageGridLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">220dp</item>
-        <item name="android:src">@drawable/ic_image_not_found</item>
+        <item name="android:src">@drawable/ic_image_placeholder</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:background">@color/color_primary_dark</item>
     </style>

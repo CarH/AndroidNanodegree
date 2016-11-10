@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="horizontal"
-    android:background="@color/color_accent"
+    android:background="@color/color_background"
     android:padding="@dimen/activity_vertical_margin">
 
     <LinearLayout

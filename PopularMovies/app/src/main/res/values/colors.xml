@@ -4,7 +4,8 @@
     <color name="color_primary_dark">#212121</color>
     <color name="color_primary">#303030</color>
     <color name="color_background">#303030</color>
-    <color name="color_accent">#424242</color>
+    <color name="color_cards">#424242</color>
+    <color name="color_accent">#00bfa5</color>
     <color name="color_text_white">#ffffff</color>
 
     <!-- black 60% Opacity  -->
