@@ -109,10 +109,6 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
 
     @Override
     public void onMovieSelected(Movie movie) {
-        Log.v(LOG_TAG, "(MainActivity) movie.tmdbMovieId: " + movie.tmdbMovieId);
-        Log.v(LOG_TAG, "(MainActivity) movie.originalTitle: " + movie.originalTitle);
-        Log.v(LOG_TAG, "(MainActivity) movie.userRating: " + movie.userRating);
-
         if (mTwoPane) {
             // Large screens mode
             DetailMovieFragment df = DetailMovieFragment.getInstance(movie);

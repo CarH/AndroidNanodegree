@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.ch.popularmovies.utilities.ConnectionUtility.isConnected;
-import static com.ch.popularmovies.utilities.ConnectionUtility.printNotConnectedMessage;
+import static com.ch.popularmovies.utilities.ConnectionUtility.showNotConnectedMessage;
 
 /**
  * Created on 21/08/2016.
@@ -130,7 +130,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                 this.enablePlaceholder = false;
             }
         }
-        Log.v(LOG_TAG, " >> enablePlaceholder: " + this.enablePlaceholder);
     }
 
     @Nullable
@@ -162,6 +161,11 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
         if (this.mPlaceholder != null) {
             this.setPlaceHolderVisibility(this.enablePlaceholder);
         }
+
+        // Set the movie title on the Detail Activity in two pane mode
+        final TextView detailTitle = (TextView) root.findViewById(R.id.detail_movie_title);
+        if (detailTitle != null)
+            detailTitle.setText(this.mMovieOriginalTitle);
 
         TextView movieReleaseDate = (TextView) root.findViewById(R.id.release_date);
         movieReleaseDate.setText(this.mMovieReleaseDate);
@@ -216,17 +220,13 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
             }
 
             private boolean movieAlreadyIncludedInTheFavoriteList() {
-                // TODO __REMOVE
                 Uri uri = MovieEntry.buildMovieUri(Long.valueOf(mTMDBMovieId));
-                Log.v(LOG_TAG, ">>> URI : " + uri.toString());
 
                 Cursor cursor = getActivity()
                         .getContentResolver()
                         .query(uri, null, null, null, null);
 
                 boolean b = cursor.getCount() != 0;
-
-                Log.v(LOG_TAG, ">>> cursor.getCount() : " + cursor.getCount());
 
                 cursor.close();
                 return b;
@@ -265,13 +265,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                 cv.put(MovieEntry.COLUMN_RELEASE_DATE, mMovieReleaseDate);
                 cv.put(MovieEntry.COLUMN_POSTER, posterPath);
 
-                Log.v(LOG_TAG, "mTMDBMovieId(_ID): " + mTMDBMovieId);
-                Log.v(LOG_TAG, "mMovieTitle: " + mMovieTitle);
-                Log.v(LOG_TAG, "mMovieUserRating: " + mMovieUserRating);
-                Log.v(LOG_TAG, "mMoviesSynopsis: " + mMovieSynopsis);
-                Log.v(LOG_TAG, "mMoviesReleaseDate: " + mMovieReleaseDate);
-                Log.v(LOG_TAG, "posterPath: " + posterPath);
-
                 showSnackBarMessage(getString(R.string.inserting_movie_in_the_fav_list));
                 final Uri contentUri = getActivity().getContentResolver().insert(MovieEntry.CONTENT_URI, cv);
                 mFab.setImageResource(R.drawable.ic_favorite_white_24dp);
@@ -303,12 +296,12 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
 
             @NonNull
             private File createFilePath() {
+                final String folderName = "posters";
                 String filename = getFormattedFilename();
                 ContextWrapper wrapper = new ContextWrapper(getActivity().getApplicationContext());
-                File dirFile = wrapper.getDir("posters", Context.MODE_PRIVATE);
+                File dirFile = wrapper.getDir(folderName, Context.MODE_PRIVATE);
                 File pathFile = new File(dirFile, filename);
 
-                Log.v(LOG_TAG, " >>> dir.path: "+dirFile.getPath() + ", path.path: " + pathFile.getPath());
                 return pathFile;
             }
 
@@ -353,7 +346,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
 
     private void fetchTrailerInfo() {
         if (!isConnected(getActivity()))
-            printNotConnectedMessage(getActivity());
+            showNotConnectedMessage(getActivity());
         else {
             StringRequest request = new StringRequest(StringRequest.Method.GET,
                     getTrailerListUrl(),
@@ -361,7 +354,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                         @Override
                         public void onResponse(String response) {
                             try {
-                                Log.v(LOG_TAG, "response: "+response);
                                 JSONArray results = new JSONObject(response).getJSONArray("results");
 
                                 for (int i = 0; i < results.length(); i++) {
@@ -369,7 +361,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                                     JSONObject trailerJson = results.getJSONObject(i);
                                     trailer.name = trailerJson.getString("name");
                                     trailer.url = composeTrailerUrl(trailerJson);
-                                    Log.v(LOG_TAG, " Trailer Name: " + trailer.name + ", url: "+ trailer.url);
 
                                     mTrailerList.add(trailer);
                                 }
@@ -464,8 +455,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG, ">> Nrows returned: " + data.getCount());
-
         if (data.getCount() > 0) {
             setFavoriteMovie();
         }
@@ -560,14 +549,13 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
 
     private void fetchReviews() {
         if (!isConnected(getActivity()))
-            printNotConnectedMessage(getActivity());
+            showNotConnectedMessage(getActivity());
         else {
             StringRequest request = new StringRequest(StringRequest.Method.GET,
                     getReviewsUrl(),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.v(LOG_TAG, "(REVIEWS)response: "+response);
                             try {
                                 JSONArray reviews = (new JSONObject(response)).getJSONArray("results");
                                 JSONObject reviewJSON = null;
@@ -587,7 +575,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v(LOG_TAG, "REVIEWS ERROR: "+error.getMessage());
+                            Log.v(LOG_TAG, "FETCHING REVIEWS ERROR: " + error.getMessage());
                         }
                     });
             RequestHandler.getInstance(getActivity()).addToRequestQueue(request);

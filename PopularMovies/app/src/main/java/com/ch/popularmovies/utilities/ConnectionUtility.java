@@ -20,7 +20,7 @@ public class ConnectionUtility {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-    public static void printNotConnectedMessage(Context context) {
+    public static void showNotConnectedMessage(Context context) {
         Toast.makeText(context, "No internet connection :(", Toast.LENGTH_LONG).show();
     }
 }

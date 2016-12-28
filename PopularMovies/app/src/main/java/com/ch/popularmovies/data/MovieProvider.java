@@ -116,7 +116,6 @@ public class MovieProvider extends ContentProvider {
             case MOVIE:
             {
                 long rowId = db.insert(MovieEntry.TABLE_NAME, null, contentValues);
-                Log.v("MovieProvider: ", ">>> rowId: " + String.valueOf(rowId));
                 if (rowId > 0)
                     retUri = MovieContract.MovieEntry.buildMovieUri(rowId);
                 else

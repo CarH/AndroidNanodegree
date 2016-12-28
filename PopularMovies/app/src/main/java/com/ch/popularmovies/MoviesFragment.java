@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import static com.ch.popularmovies.utilities.ConnectionUtility.isConnected;
-import static com.ch.popularmovies.utilities.ConnectionUtility.printNotConnectedMessage;
+import static com.ch.popularmovies.utilities.ConnectionUtility.showNotConnectedMessage;
 import static com.ch.popularmovies.utilities.Utility.isPortrait;
 
 
@@ -103,7 +103,7 @@ public class MoviesFragment extends Fragment implements Selectable {
         if (!this.mMovies.isEmpty())
             return;
         if (!isConnected(getContext()))
-            printNotConnectedMessage(getContext());
+            showNotConnectedMessage(getContext());
         else {
             // Using Volley as suggested by a reviewer
             StringRequest stringRequest = new StringRequest(Request.Method.GET,
@@ -117,8 +117,6 @@ public class MoviesFragment extends Fragment implements Selectable {
 
                         private void parseResponseAndUpdateMovieList(String response) {
                             try {
-                                Log.v(LOG_TAG, "response: "+response);
-
                                 JSONArray jsonArray = new JSONObject(response).getJSONArray("results");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonMovie = jsonArray.getJSONObject(i);
@@ -158,7 +156,7 @@ public class MoviesFragment extends Fragment implements Selectable {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v(LOG_TAG, "ERROR (Volley): " + error.getMessage());
+                            Log.v(LOG_TAG, "FETCHING MOVIES ERROR: " + error.getMessage());
                         }
                     });
 
@@ -190,7 +188,6 @@ public class MoviesFragment extends Fragment implements Selectable {
                 .appendPath(prefOrder)
                 .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_API_KEY);
 
-        Log.v(LOG_TAG, "URL: "+builder.toString());
         return builder.toString();
     }
 

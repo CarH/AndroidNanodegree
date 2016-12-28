@@ -71,7 +71,16 @@
         <item name="android:padding">16dp</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
 
+    <style name="BaseDetailMovieTitleLayout">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/white_opacity_90</item>
+        <item name="android:layout_height">78dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="BaseImageLayout">

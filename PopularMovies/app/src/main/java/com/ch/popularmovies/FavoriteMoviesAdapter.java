@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,9 +49,6 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
             ViewHolder holder = (ViewHolder) view.getTag();
             int adapterPosition = holder.getAdapterPosition();
             Movie movie = getMovieAt(adapterPosition);
-
-            Log.v("FavoriteMoviesAdapter", ">> selectedItemPosition: " + selectedItemPosition);
-            Log.v("FavoriteMoviesAdapter", ">> adapterPosition: " + adapterPosition);
 
             // Highlight the selected item
             notifyItemChanged(selectedItemPosition);
