@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.ch.popularmovies.entities.Movie;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         setContentView(R.layout.activity_main);
 
         // TODO REMOVE __ DEBUG ONLY
-        setUpDebug();
+        // setUpDebug();
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);

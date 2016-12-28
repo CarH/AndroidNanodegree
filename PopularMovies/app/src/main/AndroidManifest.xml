@@ -23,10 +23,6 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme"/>
 
-        <!-- TODO:: REMOVE -->
-        <activity android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"/>
-
         <provider
             android:authorities="com.ch.popularmovies"
             android:name=".data.MovieProvider"

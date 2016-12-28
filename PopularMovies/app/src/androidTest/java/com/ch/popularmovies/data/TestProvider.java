@@ -20,8 +20,6 @@ public class TestProvider extends AndroidTestCase {
     }
 
     private void deleteAllRecords() {
-        // TODO:: replace this to deleteAllRecordsFromProvider as soon as you implement it
-//        deleteAllRecordsFromDB();
         deleteAllRecordsFromProvider();
     }
 

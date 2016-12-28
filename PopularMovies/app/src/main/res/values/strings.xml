@@ -49,8 +49,5 @@
     <string name="is_favorited_movie">IS_FAVORITED_MOVIE</string>
     <string name="tmdb_movie_id">THE_MOVIE_DB_ID</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="placeholder_detail_movie">Select a movie to see its detail information here</string>
-
 </resources>
