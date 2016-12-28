@@ -11,8 +11,20 @@
         android:contentDescription="@string/desc_movie_poster" />
 
     <TextView
+        android:layout_alignTop="@id/grid_item_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/touch_item_selector"/>
+
+    <TextView
         android:id="@+id/grid_item_movie_title"
         android:layout_alignBottom="@id/grid_item_thumbnail"
         style="@style/BaseTextGridLayout"/>
+
+    <TextView
+        android:layout_alignBottom="@id/grid_item_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/touch_item_selector"/>
 
 </RelativeLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView style="@style/BaseCardStyle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout style="@style/BaseSectionStyle"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/review_content"
+            style="@style/BaseTextDetailLayout"/>
+        <View
+            style="@style/BaseSeparatorStyle"
+            android:layout_marginTop="@dimen/separator_margin_top"
+            android:layout_marginBottom="@dimen/separator_margin_bottom" />
+        <TextView
+            android:id="@+id/review_author"
+            style="@style/BaseTextDetailLayout"
+            android:layout_width="wrap_content" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

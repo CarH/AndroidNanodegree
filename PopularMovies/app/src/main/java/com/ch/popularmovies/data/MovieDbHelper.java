@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MovieDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    static final String DATABASE_NAME = "weather.db";
+    static final String DATABASE_NAME = "popularmovies.db";
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -22,11 +22,12 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
                         MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY, " +
                         MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-                        MovieContract.MovieEntry.COLUMN_POSTER + " BLOB, " +
+                        MovieContract.MovieEntry.COLUMN_POSTER + " TEXT, " +
                         MovieContract.MovieEntry.COLUMN_SYNOPSIS + " TEXT, " +
                         MovieContract.MovieEntry.COLUMN_USER_RATING + " FLOAT, " +
-                        MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT " +
-                        ")";
+                        MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT, " +
+                        MovieContract.MovieEntry.COLUMN_CREATED_AT + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP " +
+                        ");";
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }
 

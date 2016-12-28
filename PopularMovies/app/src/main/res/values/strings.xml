@@ -36,5 +36,21 @@
     <string name="movie_poster" translatable="false">MOVIE_POSTER</string>
     <string name="movie_vote_average" translatable="false">VOTE_AVERAGE</string>
     <string name="movie_release_date" translatable="false">RELEASE_DATE</string>
+    <string name="desc_movie_poster">Movie poster</string>
+    <string name="section_title_synopsis">Synopsis</string>
+    <string name="section_title_trailer">Trailers</string>
+    <string name="section_title_review">Reviews</string>
+    <string name="section_title_release_date">Release Date</string>
+    <string name="author">Author</string>
+    <string name="section_title_user_rating">User Rating</string>
+    <string name="inserting_movie_in_the_fav_list">Adding movie to the favorite movies list</string>
+    <string name="removing_movie_from_the_fav_list">Removing movie from the favorite movies list</string>
+
+    <string name="is_favorited_movie">IS_FAVORITED_MOVIE</string>
+    <string name="tmdb_movie_id">THE_MOVIE_DB_ID</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder_detail_movie">Select a movie to see its detail information here</string>
 
 </resources>

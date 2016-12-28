@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-
+        <!-- MainActivity -->
         <activity android:name=".MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -17,17 +17,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"/>
+
+        <!-- DetailActivity -->
         <activity android:name=".DetailMovieActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme"/>
+
+        <!-- TODO:: REMOVE -->
+        <activity android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"/>
 
         <provider
             android:authorities="com.ch.popularmovies"
-            android:name=".data.MovieProvider" />
+            android:name=".data.MovieProvider"
+            android:exported="false"
+            android:syncable="true"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 </manifest>

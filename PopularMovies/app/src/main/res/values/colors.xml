@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_black">#000000</color>
-    <color name="color_primary_dark">#212121</color>
-    <color name="color_primary">#303030</color>
+    <!-- Dark Theme -->
+    <color name="color_primary_dark">#000000</color>
+    <color name="color_primary">#212121</color>
     <color name="color_background">#303030</color>
-    <color name="color_cards">#424242</color>
-    <color name="color_accent">#00bfa5</color>
+    <color name="color_card">#424242</color>
+
+    <color name="color_accent">#d50000</color>
+    <color name="color_black">#000000</color>
     <color name="color_text_white">#ffffff</color>
 
     <!-- black 60% Opacity  -->
     <color name="black_opacity_60">#99000000</color>
     <!-- white 90% Opacity  -->
     <color name="white_opacity_90">#E6ffffff</color>
+
+    <color name="white_12">#1FFFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

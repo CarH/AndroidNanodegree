@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/nested_view_id"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/detail_movie_fragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Rating Release date Section -->
+        <LinearLayout
+            style="@style/BaseSectionStyle">
+            <TextView
+                style="@style/BaseTitleDetailLayout"
+                android:text="@string/section_title_release_date"/>
+
+            <TextView
+                style="@style/BaseTextDetailLayout"
+                android:id="@+id/release_date" />
+        </LinearLayout>
+
+        <!-- Separator -->
+        <View style="@style/BaseSeparatorStyle"
+            android:layout_marginTop="@dimen/separator_margin_top"
+            android:layout_marginBottom="@dimen/separator_margin_bottom" />
+
+        <!-- User Rating Section -->
+        <LinearLayout style="@style/BaseSectionStyle">
+            <TextView
+                style="@style/BaseTitleDetailLayout"
+                android:text="@string/section_title_user_rating"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RatingBar
+                    android:id="@+id/rating_bar"
+                    style="@style/Base.Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:layout_marginRight="@dimen/grid_item_margin"/>
+
+                <TextView
+                    android:id="@+id/user_rating"
+                    style="@style/BaseTextDetailLayout" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Separator -->
+        <View style="@style/BaseSeparatorStyle"
+            android:layout_marginTop="@dimen/separator_margin_top"
+            android:layout_marginBottom="@dimen/separator_margin_bottom" />
+
+        <!-- Synopsis Section -->
+        <LinearLayout style="@style/BaseSectionStyle">
+
+            <TextView
+                android:id="@+id/synopsis_section"
+                style="@style/BaseTitleDetailLayout"
+                android:text="@string/section_title_synopsis" />
+
+            <TextView
+                android:id="@+id/synopsis"
+                style="@style/BaseTextDetailLayout"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+
+        <!-- Separator -->
+        <View style="@style/BaseSeparatorStyle"
+            android:layout_marginTop="@dimen/separator_margin_top"
+            android:layout_marginBottom="@dimen/separator_margin_bottom" />
+
+        <!-- Trailers Section -->
+        <LinearLayout
+            style="@style/BaseSectionStyle"
+            android:layout_margin="0dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/trailer_section_title"
+                style="@style/BaseTitleDetailLayout"
+                android:layout_margin="@dimen/detail_section_margin"
+                android:text="@string/section_title_trailer" />
+
+            <android.support.v7.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/recycler_view_trailers"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <!-- Separator -->
+        <View style="@style/BaseSeparatorStyle"
+            android:layout_marginTop="@dimen/separator_margin_top"
+            android:layout_marginBottom="@dimen/separator_margin_bottom" />
+
+        <!-- Comments Section -->
+        <LinearLayout style="@style/BaseSectionStyle"
+            android:layout_margin="0dp">
+
+            <TextView
+                style="@style/BaseTitleDetailLayout"
+                android:text="@string/section_title_review"
+                android:layout_margin="@dimen/detail_section_margin"/>
+
+            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/recycler_view_reviews"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:background="@color/color_background">
+
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

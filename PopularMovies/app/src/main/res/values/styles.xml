@@ -19,18 +19,23 @@
         <!--<item name="background">@color/black_opacity_60</item>-->
     <!--</style>-->
 
-    <style name="CustomCardStyle">
+    <style name="BaseSectionStyle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">@dimen/detail_section_margin</item>
+    </style>
+    
+    <style name="BaseCardStyle">
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/activity_vertical_margin</item>
-
-        <!--
-            Although the settings below are common to the base style cards the IDE didn't allow
-            me to insert them here. I could not find why.
-         -->
-        <!--<item name="card_view:cardCornerRadius">@dimen/cardview_default_radius</item>-->
-        <!--<item name="card_view:cardElevation">@dimen/cardview_default_elevation</item>-->
+        <item name="android:layout_marginBottom">@dimen/card_margin</item>
+        <item name="android:layout_marginLeft">@dimen/card_margin</item>
+        <item name="android:layout_marginRight">@dimen/card_margin</item>
+        <item name="cardBackgroundColor">@color/color_card</item>
+        <item name="cardCornerRadius">@dimen/cardview_default_radius</item>
+        <item name="cardElevation">@dimen/cardview_default_elevation</item>
     </style>
 
     <style name="BaseTextDetailLayout">
@@ -45,8 +50,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/color_text_white</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Title</item>
-        <item name="android:fontFamily">cursive</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <!--<item name="android:fontFamily">cursive</item>-->
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
@@ -65,6 +70,8 @@
         <item name="android:layout_height">68dp</item>
         <item name="android:padding">16dp</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+
     </style>
 
     <style name="BaseImageLayout">
@@ -73,4 +80,16 @@
         <item name="android:minWidth">140dp</item>
         <item name="android:minHeight">200dp</item>
     </style>
+
+    <style name="BaseSeparatorStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/white_12</item>
+    </style>
+
+    <!-- To avoid changing the font size in landscape mode -->
+    <style name="ToolbarTitleStyle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

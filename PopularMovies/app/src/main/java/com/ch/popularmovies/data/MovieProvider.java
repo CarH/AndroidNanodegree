@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.ch.popularmovies.data.MovieContract.MovieEntry;
 
@@ -115,6 +116,7 @@ public class MovieProvider extends ContentProvider {
             case MOVIE:
             {
                 long rowId = db.insert(MovieEntry.TABLE_NAME, null, contentValues);
+                Log.v("MovieProvider: ", ">>> rowId: " + String.valueOf(rowId));
                 if (rowId > 0)
                     retUri = MovieContract.MovieEntry.buildMovieUri(rowId);
                 else
@@ -126,8 +128,9 @@ public class MovieProvider extends ContentProvider {
         }
 
         getContext().getContentResolver().notifyChange(uri, null);
-        db.close();
-        return null;
+        // TODO: DO NOT USE db.close() in your content provider (https://classroom.udacity.com/nanodegrees/nd801/parts/8011345403/modules/432468910275460/lessons/3599339441/concepts/36499394140923)
+        // db.close();
+        return retUri;
     }
 
     @Override
@@ -135,7 +138,7 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         int match = sUriMatcher.match(uri);
-        int numRowsDeleted=0;
+        int numRowsDeleted = 0;
         switch (match){
             case MOVIE:
             {
@@ -168,6 +171,6 @@ public class MovieProvider extends ContentProvider {
 
         if (numRowsUpdated > 0)
             getContext().getContentResolver().notifyChange(uri, null);
-        return 0;
+        return numRowsUpdated;
     }
 }
