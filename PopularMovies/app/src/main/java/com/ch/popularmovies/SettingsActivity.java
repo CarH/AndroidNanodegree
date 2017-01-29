@@ -10,8 +10,6 @@ import android.view.MenuItem;
 public class SettingsActivity extends AppCompatPreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
-    private final String LOG_TAG = SettingsActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
