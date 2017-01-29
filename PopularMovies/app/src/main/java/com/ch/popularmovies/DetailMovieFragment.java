@@ -207,107 +207,110 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
             this.mFab.show();
     }
 
-    void setUpFabButton() {
-        this.mFab.setOnClickListener(new View.OnClickListener() {
-            String posterPath;
+    private class FavoriteButtonOnClickListener implements View.OnClickListener {
+        String posterPath;
 
-            @Override
-            public void onClick(View view) {
-                if (movieAlreadyIncludedInTheFavoriteList())
-                    removeFavoriteMovie();
-                else
-                    persistFavoriteMovie();
+        @Override
+        public void onClick(View view) {
+            if (movieAlreadyIncludedInTheFavoriteList())
+                removeFavoriteMovie();
+            else
+                persistFavoriteMovie();
+        }
+
+        private boolean movieAlreadyIncludedInTheFavoriteList() {
+            Uri uri = MovieEntry.buildMovieUri(Long.valueOf(mTMDBMovieId));
+
+            Cursor cursor = getActivity()
+                    .getContentResolver()
+                    .query(uri, null, null, null, null);
+
+            boolean b = cursor.getCount() != 0;
+
+            cursor.close();
+            return b;
+        }
+
+        private void removeFavoriteMovie() {
+            String selection = MovieEntry.TABLE_NAME + "." + MovieEntry._ID + " = ? ";
+            showSnackBarMessage(getString(R.string.removing_movie_from_the_fav_list));
+            getActivity()
+                    .getContentResolver()
+                    .delete(MovieEntry.CONTENT_URI,
+                            selection,
+                            new String[] {mTMDBMovieId});
+            deletePoster();
+            mFab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
+
+        private void showSnackBarMessage(String msg) {
+            Snackbar.make(rootView, msg, Snackbar.LENGTH_LONG)
+                    .show();
+        }
+
+        private boolean deletePoster() {
+            File file = new File(getFormattedFilename());
+            return file.delete();
+        }
+
+        private void persistFavoriteMovie() {
+            savePoster();
+
+            ContentValues cv = new ContentValues();
+            cv.put(MovieEntry._ID, mTMDBMovieId);
+            cv.put(MovieEntry.COLUMN_TITLE, mMovieTitle);
+            cv.put(MovieEntry.COLUMN_USER_RATING, mMovieUserRating);
+            cv.put(MovieEntry.COLUMN_SYNOPSIS, mMovieSynopsis);
+            cv.put(MovieEntry.COLUMN_RELEASE_DATE, mMovieReleaseDate);
+            cv.put(MovieEntry.COLUMN_POSTER, posterPath);
+
+            showSnackBarMessage(getString(R.string.inserting_movie_in_the_fav_list));
+            getActivity().getContentResolver().insert(MovieEntry.CONTENT_URI, cv);
+            mFab.setImageResource(R.drawable.ic_favorite_white_24dp);
+        }
+
+        private void savePoster() {
+            if (mMoviePoster == null) {
+                this.posterPath = null;
+                return;
             }
-
-            private boolean movieAlreadyIncludedInTheFavoriteList() {
-                Uri uri = MovieEntry.buildMovieUri(Long.valueOf(mTMDBMovieId));
-
-                Cursor cursor = getActivity()
-                        .getContentResolver()
-                        .query(uri, null, null, null, null);
-
-                boolean b = cursor.getCount() != 0;
-
-                cursor.close();
-                return b;
-            }
-
-            private void removeFavoriteMovie() {
-                String selection = MovieEntry.TABLE_NAME + "." + MovieEntry._ID + " = ? ";
-                showSnackBarMessage(getString(R.string.removing_movie_from_the_fav_list));
-                getActivity()
-                        .getContentResolver()
-                        .delete(MovieEntry.CONTENT_URI,
-                                selection,
-                                new String[] {mTMDBMovieId});
-                deletePoster();
-                mFab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-            }
-
-            private void showSnackBarMessage(String msg) {
-                Snackbar.make(rootView, msg, Snackbar.LENGTH_LONG)
-                        .show();
-            }
-
-            private boolean deletePoster() {
-                File file = new File(getFormattedFilename());
-                return file.delete();
-            }
-
-            private void persistFavoriteMovie() {
-                savePoster();
-
-                ContentValues cv = new ContentValues();
-                cv.put(MovieEntry._ID, mTMDBMovieId);
-                cv.put(MovieEntry.COLUMN_TITLE, mMovieTitle);
-                cv.put(MovieEntry.COLUMN_USER_RATING, mMovieUserRating);
-                cv.put(MovieEntry.COLUMN_SYNOPSIS, mMovieSynopsis);
-                cv.put(MovieEntry.COLUMN_RELEASE_DATE, mMovieReleaseDate);
-                cv.put(MovieEntry.COLUMN_POSTER, posterPath);
-
-                showSnackBarMessage(getString(R.string.inserting_movie_in_the_fav_list));
-                mFab.setImageResource(R.drawable.ic_favorite_white_24dp);
-            }
-
-            private void savePoster() {
-                if (mMoviePoster == null) {
-                    this.posterPath = null;
-                    return;
-                }
-                File filePath = createFilePath();
-                Bitmap bitmap = ((BitmapDrawable)mMoviePoster.getDrawable()).getBitmap();
-                FileOutputStream fos = null;
+            File filePath = createFilePath();
+            Bitmap bitmap = ((BitmapDrawable)mMoviePoster.getDrawable()).getBitmap();
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(filePath);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
                 try {
-                    fos = new FileOutputStream(filePath);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                } catch (Exception e) {
+                    if (fos != null)
+                        fos.close();
+                } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        if (fos != null)
-                            fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
-                this.posterPath = filePath.getPath();
             }
+            this.posterPath = filePath.getPath();
+        }
 
-            @NonNull
-            private File createFilePath() {
-                final String folderName = "posters";
-                String filename = getFormattedFilename();
-                ContextWrapper wrapper = new ContextWrapper(getActivity().getApplicationContext());
-                File dirFile = wrapper.getDir(folderName, Context.MODE_PRIVATE);
-                File pathFile = new File(dirFile, filename);
+        @NonNull
+        private File createFilePath() {
+            final String folderName = "posters";
+            String filename = getFormattedFilename();
+            ContextWrapper wrapper = new ContextWrapper(getActivity().getApplicationContext());
+            File dirFile = wrapper.getDir(folderName, Context.MODE_PRIVATE);
+            File pathFile = new File(dirFile, filename);
 
-                return pathFile;
-            }
+            return pathFile;
+        }
 
-            private String getFormattedFilename() {
-                return String.format("%s_poster.jpg", mMovieTitle.replace(" ", "_"));
-            }
-        });
+        private String getFormattedFilename() {
+            return String.format("%s_poster.jpg", mMovieTitle.replace(" ", "_"));
+        }
+    }
+
+    void setUpFabButton() {
+        this.mFab.setOnClickListener(new FavoriteButtonOnClickListener());
     }
 
     private void setDisplayHome(Toolbar toolbar) {
