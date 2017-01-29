@@ -493,7 +493,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
         List<Trailer> mTrailers;
 
         class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            TextView mTrailerTitleView;
+            private TextView mTrailerTitleView;
 
             ViewHolder(View itemView) {
                 super(itemView);
