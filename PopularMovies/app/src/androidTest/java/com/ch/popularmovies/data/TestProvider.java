@@ -31,7 +31,6 @@ public class TestProvider extends AndroidTestCase {
     }
 
     public void deleteAllRecordsFromProvider() {
-        int nrows = mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null);
         Cursor cursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
                 null,
                 null,
