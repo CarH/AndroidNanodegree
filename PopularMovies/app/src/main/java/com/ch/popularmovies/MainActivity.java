@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
 
-    private MoviesPagerAdapter mPagerAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
     }
 
     private void setUpViewPager(ViewPager viewPager) {
-        mPagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
+        MoviesPagerAdapter mPagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
         // This sequence is important!
         mPagerAdapter.addFragment(new MoviesFragment(), "Popular");
         mPagerAdapter.addFragment(new MoviesFragment(), "Top Rated");
