@@ -490,7 +490,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
 
 
     class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
-        List<Trailer> mTrailers;
+        private List<Trailer> mTrailers;
 
         class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             private TextView mTrailerTitleView;
