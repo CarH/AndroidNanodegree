@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.ch.popularmovies.entities.Movie;
 
 public class DetailMovieActivity extends AppCompatActivity {
-    private static final String LOG_TAG = DetailMovieActivity.class.getSimpleName();
-
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
