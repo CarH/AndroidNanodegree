@@ -266,7 +266,6 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
                 cv.put(MovieEntry.COLUMN_POSTER, posterPath);
 
                 showSnackBarMessage(getString(R.string.inserting_movie_in_the_fav_list));
-                final Uri contentUri = getActivity().getContentResolver().insert(MovieEntry.CONTENT_URI, cv);
                 mFab.setImageResource(R.drawable.ic_favorite_white_24dp);
             }
 
