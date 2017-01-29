@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
     class MoviesPagerAdapter extends FragmentPagerAdapter {
         private static final int MOST_POPULAR_POS = 0;
         private static final int HIGHEST_RATED_POS = 1;
-        private static final int FAVORITE_POS = 2;
 
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
