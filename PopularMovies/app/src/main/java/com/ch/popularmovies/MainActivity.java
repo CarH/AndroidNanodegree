@@ -14,29 +14,18 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.ch.popularmovies.entities.Movie;
-import com.facebook.stetho.Stetho;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-
 public class MainActivity extends AppCompatActivity implements MovieCallback {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
-
-    private MoviesPagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // TODO REMOVE __ DEBUG ONLY
-        // setUpDebug();
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -65,20 +54,8 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         return super.onCreateView(name, context, attrs);
     }
 
-    // TODO :: REMOVE REMOVE REMOVE ___ DEBUG ONLY !!!
-    private void setUpDebug() {
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                        .build());
-        new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
-    }
-
     private void setUpViewPager(ViewPager viewPager) {
-        mPagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
+        MoviesPagerAdapter mPagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
         // This sequence is important!
         mPagerAdapter.addFragment(new MoviesFragment(), "Popular");
         mPagerAdapter.addFragment(new MoviesFragment(), "Top Rated");
@@ -127,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
     class MoviesPagerAdapter extends FragmentPagerAdapter {
         private static final int MOST_POPULAR_POS = 0;
         private static final int HIGHEST_RATED_POS = 1;
-        private static final int FAVORITE_POS = 2;
 
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();

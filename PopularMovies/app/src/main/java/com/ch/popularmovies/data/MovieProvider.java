@@ -17,8 +17,8 @@ import com.ch.popularmovies.data.MovieContract.MovieEntry;
 
 public class MovieProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildMatcher();
-    static final int MOVIE = 100;
-    static final int MOVIE_WITH_ID = 101;
+    private static final int MOVIE = 100;
+    private static final int MOVIE_WITH_ID = 101;
 
     private MovieDbHelper mOpenHelper;
     private static final String sMovieIdSelection = MovieEntry.TABLE_NAME +

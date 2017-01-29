@@ -24,8 +24,6 @@ import static com.ch.popularmovies.utilities.Utility.isPortrait;
  * A simple {@link Fragment} subclass.
  */
 public class FavoriteMoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, Selectable {
-    private static final String LOG_TAG = FavoriteMoviesFragment.class.getSimpleName();
-
     private static final String SAVED_SELECTED_POSITION_KEY = "selectedPosition";
     private static final int FAVORITE_LOADER_ID = 100;
 
@@ -44,7 +42,7 @@ public class FavoriteMoviesFragment extends Fragment implements LoaderManager.Lo
     final static int COL_FAV_MOVIE_SYNOPSIS = 4;
     final static int COL_FAV_MOVIE_POSTER = 5;
 
-    FavoriteMoviesAdapter mAdapter;
+    private FavoriteMoviesAdapter mAdapter;
     private RecyclerView recyclerView;
     private MovieCallback mFatherActivity;
     private int selectedPosition;
