@@ -23,8 +23,6 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity implements MovieCallback {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
 
