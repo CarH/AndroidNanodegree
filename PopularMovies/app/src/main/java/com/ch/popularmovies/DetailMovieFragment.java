@@ -309,7 +309,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
         }
     }
 
-    void setUpFabButton() {
+    private void setUpFabButton() {
         this.mFab.setOnClickListener(new FavoriteButtonOnClickListener());
     }
 
