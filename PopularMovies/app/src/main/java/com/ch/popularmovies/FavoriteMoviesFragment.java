@@ -42,7 +42,7 @@ public class FavoriteMoviesFragment extends Fragment implements LoaderManager.Lo
     final static int COL_FAV_MOVIE_SYNOPSIS = 4;
     final static int COL_FAV_MOVIE_POSTER = 5;
 
-    FavoriteMoviesAdapter mAdapter;
+    private FavoriteMoviesAdapter mAdapter;
     private RecyclerView recyclerView;
     private MovieCallback mFatherActivity;
     private int selectedPosition;
