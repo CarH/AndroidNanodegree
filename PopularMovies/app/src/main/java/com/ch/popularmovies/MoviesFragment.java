@@ -142,7 +142,7 @@ public class MoviesFragment extends Fragment implements Selectable {
 
                         @Nullable
                         private String getPosterUrl(String posterPath) {
-                            return (posterPath.equals("null")) ? null
+                            return "null".equals(posterPath) ? null
                                     : composePosterUrl(posterPath);
                         }
 
