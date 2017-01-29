@@ -208,7 +208,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
     }
 
     private class FavoriteButtonOnClickListener implements View.OnClickListener {
-        String posterPath;
+        private String posterPath;
 
         @Override
         public void onClick(View view) {
