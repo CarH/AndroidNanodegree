@@ -1,4 +1,7 @@
 # AndroidNanodegree - Popular Movies
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7aa5e6e5775c45f8915723c03270a175)](https://www.codacy.com/app/CarH/AndroidNanodegree?utm_source=github.com&utm_medium=referral&utm_content=CarH/AndroidNanodegree&utm_campaign=badger)
+
 First project that I've done in the Android Developer Nanodegree program.
 
 This app is intended to collect data about movies using the Movie Database API and gracefully display those data to the user.
