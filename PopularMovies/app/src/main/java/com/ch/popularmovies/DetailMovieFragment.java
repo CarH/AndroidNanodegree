@@ -594,7 +594,7 @@ public class DetailMovieFragment extends Fragment implements AppBarLayout.OnOffs
     }
 
     class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
-        List<Review> mReviews;
+        private List<Review> mReviews;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             TextView author;
